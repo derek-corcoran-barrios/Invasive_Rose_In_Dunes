@@ -1,0 +1,19 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Invasive_Rose_In_Dunes
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of Invasive_Rose_In_Dunes is to generate and clean a dataset to study the influence of the species called *Rosa rugosa* in the richness of positive species. The script to clean the dataset is `Fitering.R`, and the final dataset is `Final.Rds`. This readme file is in its initial state, thus it will be updated soon
