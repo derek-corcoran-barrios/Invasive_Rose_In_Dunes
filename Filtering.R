@@ -26,22 +26,46 @@ frekvens2 <- frekvens2 %>%
   mutate(plot = as.character(plot)) %>% dplyr::select(plot, year, LatArt) %>%
   dplyr::filter(year < (lubridate::year(lubridate::ymd(Sys.Date())) + 1)) %>%
   group_by(plot) %>%
-  dplyr::filter(year == max(year))  %>%
-  dplyr::filter(LatArt != "")
+  dplyr::filter(LatArt != "") %>%
+  ungroup()
+
 
 Test <- read_rds("AllData4.rds") %>%
   dplyr::filter(Dataset == "Novana") %>%
   separate(col = "ID", into = c("ID", "plot")) %>%
   right_join(frekvens2) %>%
-  dplyr::filter(LatArt == "Rosa rugosa", habtype == 2140) %>%
+  dplyr::filter(habtype == 2140) %>%
   dplyr::select("plot", "LatArt", "ID", "Dataset","habtype",
-                "MajorHab", "geometry") %>%
-  rename(site = ID)
+                "MajorHab", "year") %>%
+  rename(site = ID) %>%
+  dplyr::group_split(plot, year)
+
+## make binary variable with 1 and 0
+
+
+
+for(i in 1:length(Test)){
+  Test[[i]]$Rosa <- NA
+
+  Test[[i]]$Rosa <- ifelse("Rosa rugosa" %in% Test[[i]]$LatArt, 1, 0)
+
+  Test[[i]] <- Test[[i]] %>%
+    dplyr::select(-LatArt) %>%
+    distinct()
+
+  Test[[i]]
+  if((i %% 100) == 0){
+    message(paste(i, "of", length(Test), "ready!", Sys.time()))
+  }
+}
 
 rm(Artlist)
 rm(frekvens2)
 
 gc()
+
+Test <- Test %>%
+  purrr::reduce(rbind)
 
 
 Species <- read_csv("Novana/alledata-abiotiske2.csv") %>% dplyr::select("site", "plot", "year", "antalarter", "antalstjernearter", "antaltostjernearter",
